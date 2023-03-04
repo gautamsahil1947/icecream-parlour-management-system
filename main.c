@@ -13,10 +13,10 @@ typedef struct ice_cream_inventory
 {
     char * name;
     int quantity;
-    struct ice_cream_inventory *next;
+    struct ice_cream_inventory *right;
+    struct ice_cream_inventory *left;
 }
 ice_cream_inventory;
-
 
 
 void main(void)
@@ -29,6 +29,8 @@ void main(void)
     // enter the system
     if (n == 1)
     {
+        printf("\n");
+        printf("**************************************\n");
         enter_system();
     }
     else if (n == 0)
