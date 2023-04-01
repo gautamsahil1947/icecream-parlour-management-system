@@ -19,7 +19,7 @@ node *append(node *);
 
 int main(void) {
         /*      no list exists  */        
-        node *list;
+        node *list = NULL;
 
         int n;
         printf("enter n: ");
