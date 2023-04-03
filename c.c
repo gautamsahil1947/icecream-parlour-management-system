@@ -14,11 +14,13 @@ void summarise(node *);
 node * restock(node *);
 node * search(node *, char[]);
 void update_database(node *);
+void selling(node *, char[], int ); 
 
 int main(void) {
         printf("-------------------------------------\n");
         printf("welcome to the software\n\n");
         printf("press 0 to exit\npress 1 to show inventry\npress 2 to restock inventry\n");
+        printf("press 3 to sell icecreams\n\n");
         // reload the data to a live list
         node *list = NULL;
         FILE *file = fopen("data.txt", "r");
@@ -52,7 +54,13 @@ int main(void) {
                         continue;
                 } else if (n == 2) {
                         list = restock(list);
-                } 
+                } else if (n == 3) {
+                        printf("enter name quantity: ");
+                        char ice_name[20];
+                        int quant;
+                        scanf("%s %i", ice_name, &quant);
+                        selling(list, ice_name, quant);
+                }
         }
 
 
@@ -131,6 +139,25 @@ void update_database(node *list) {
         }
 }
 
+void selling(node *list, char s[20], int k) {
+        if (list == NULL) {
+                printf("no icecreams to sell\n");
+        } else {
+                node *tmp = search(list, s);
+                if (tmp == NULL) {
+                        // not inside the list
+                        printf("variety not available\n");
+                } else {
+                        if (tmp -> n >= k) {
+                                printf("transaction ok\n");
+                                tmp -> n -= k;
+                        } else {
+                                printf("only %i available\n", tmp -> n);
+                        }
+                }
+        }
+
+}
 /*
 
 -------------------------------------
