@@ -1,87 +1,180 @@
 #include <stdio.h>
 #include <stdbool.h>
-#include <stdlib.h>
 #include <string.h>
-#include <time.h>
+#include <stdlib.h>
 
 typedef struct node {
         int n;
-        char name[19];
+        char name[20];
         struct node *next;
 } node;
+node *append(node *, char[], int);
 
-void summarise(void);
-void enter_system(void);
-void reload(node *list_ptr);
-void restock(node *list_ptr);
-void put_to_file(node *list);
-node *append(node *);
+void summarise(node *);
+node * restock(node *);
+node * search(node *, char[]);
+void update_database(node *);
 
 int main(void) {
-        /*      no list exists  */        
+        printf("-------------------------------------\n");
+        printf("welcome to the software\n\n");
+        printf("press 0 to exit\npress 1 to show inventry\npress 2 to restock inventry\n");
+        // reload the data to a live list
         node *list = NULL;
+        FILE *file = fopen("data.txt", "r");
+        char c[20];
+        int t;
 
-        int n;
-        printf("enter n: ");
-        scanf("%i", &n);
-
-        for (int i = 0; i < n; i++) {
-                list = append(list);
+        while (fscanf(file, "%s %i", c, &t) != EOF) {
+                // add data to list
+                list = append(list,c,t);
         }
-        
-        /*      a list with n names and quantities exists       */
-        for (node *tmp = list; tmp != NULL; tmp = tmp -> next) {
-                printf("%s %i\n", tmp -> name, tmp -> n);
-                printf("node *next is %p\n", tmp -> next);
-        }
-
-        put_to_file(list);
-        return 0;
-
-
-
-
-
-}
-
-void put_to_file(node *list) {
-        // this function takes a linked list and puts all the contents to the files
-        FILE * file = fopen("data.txt", "w");
-        FILE * file1 = fopen("numbers.txt", "w");
-        for (node *tmp = list; tmp != NULL; tmp = tmp -> next) {
-                fprintf(file, "%s\n", tmp -> name);
-                fprintf(file1, "%i\n", (tmp -> n));
-        }
-
         fclose(file);
-        fclose(file1);
+        // at this point, everything is in the linked list
+
+        while (true) {
+                printf("-------------------------------------\n");
+ 
+                int n;
+                printf("n: ");
+                scanf("%i", &n);
+                /*      challange that i faced here was that once given input, that option 
+                        was going in a forever loop. the problem was that the three lines
+                        above were outside the loop, therefore once taken input, n was the same
+                        for all the loops, so same condition was checked over and over.
+                */
+                if (n == 0) {
+                        printf("thanks for using icpms\n");
+                        update_database(list);
+                        return 0;
+                } else if (n == 1) {
+                        summarise(list); 
+                        continue;
+                } else if (n == 2) {
+                        list = restock(list);
+                } 
+        }
+
+
 }
 
-
-void restock(node *list_ptr) {
-        /*      this function loads all the file contents to the data structures
-                linked list in this case        */
-        
-
+node * search(node *list, char a[]) {
+        if (list == NULL) {
+                return NULL;
+        } else {
+                for (node *tmp = list; tmp != NULL; tmp = tmp -> next) {
+                        if (!strcmp(a, tmp -> name)) {
+                                return tmp;
+                        }
+                }
+        }
 }
 
-
-node * append(node *list) {
-
+node * append(node *list, char a[], int t) {
         node *tmp = malloc(sizeof(node));
         if (tmp != NULL) {
-                scanf("%s", tmp -> name);
-                scanf("%i", &(tmp -> n));
                 tmp -> next = NULL;
-        } else {
-                printf("memory allocation error\n");
-                exit(1);
+                tmp -> n = t;
+                strcpy(tmp -> name, a);                
         }
 
         if (list == NULL) {
-                return tmp;                
+                return tmp;
         } else {
                 tmp -> next = list;
                 return tmp;
         }
+        
 }
+
+void summarise(node *list) {
+        printf("\n\nsummary\n\n");
+        if (list == NULL) {
+                printf("empty\n");
+        } else {
+                for (node *tmp = list; tmp != NULL; tmp = tmp -> next) {
+                        printf("%s %i\n", tmp -> name, tmp -> n);
+                }
+        }
+        
+}
+
+node * restock(node *list) {
+        int n;
+        printf("enter number of items to add or check: ");
+        scanf("%i", &n);
+        for (int i = 0; i < n; i++) {
+                char buffer[20];
+                int tmp;
+
+                scanf("%s %i", buffer, &tmp);
+                // search if the name exists
+                node *res = search(list, buffer);
+                if (res != NULL) {
+                        res -> n += tmp;
+                } else {
+                        list = append(list, buffer, tmp);
+                }      
+        }
+        return list;
+ 
+}
+
+void update_database(node *list) {
+        /*      since list has all the data, there is no need of the previous
+                contents of the file. although inefficient, for the time being
+                is working. therefore, the data is read into a linked-list at the
+                beginning, and is manipulated. later the data is overwritten to the file*/
+        FILE *file = fopen("data.txt", "w");
+        for (node *tmp = list; tmp != NULL; tmp = tmp -> next) {
+                fprintf(file, "%s %i\n", tmp -> name, tmp -> n);
+        }
+}
+
+/*
+
+-------------------------------------
+welcome to the software
+
+press 0 to exit
+press 1 to show inventry
+press 2 to restock inventry
+-------------------------------------
+n: 1
+
+
+summary
+
+4 0
+sahil 0
+1 0
+sahil2 0
+5 0
+gautam 0
+6 0
+sahil_gautam 0
+-------------------------------------
+n: 1
+
+
+summary
+
+4 0
+sahil 0
+1 0
+sahil2 0
+5 0
+gautam 0
+6 0
+sahil_gautam 0
+-------------------------------------
+n: ^C
+
+workspa
+
+
+this was because maybe just a guess, that i was reading the string and the int 
+seperately using fscanfs.
+
+the solution to this is read them in the same fscanf which is != EOF
+*/
