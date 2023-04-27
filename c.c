@@ -136,7 +136,18 @@ void update_database(node *list) {
         for (node *tmp = list; tmp != NULL; tmp = tmp -> next) {
                 fprintf(file, "%s %i\n", tmp -> name, tmp -> n);
         }
+        fclose(file);
+
+        // free that memory 
+        for (node *tmp = list; tmp != NULL; tmp = list) {
+                list = list -> next;
+                free(tmp);
+        }
+        
 }
+
+
+
 
 void selling(node *list, char s[], int k) {
         if (list == NULL) {

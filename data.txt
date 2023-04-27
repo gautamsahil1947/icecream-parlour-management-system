@@ -1,3 +1,5 @@
-sahil 11
-gautam 4
+sahil 1
+gautam 5
 sahil_gautam 6
+bharat 100
+amartya 600
