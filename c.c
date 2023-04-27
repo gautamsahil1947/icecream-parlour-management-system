@@ -67,15 +67,14 @@ int main(void) {
 }
 
 node * search(node *list, char a[]) {
-        if (list == NULL) {
-                return NULL;
-        } else {
+        if (list != NULL) {
                 for (node *tmp = list; tmp != NULL; tmp = tmp -> next) {
                         if (!strcmp(a, tmp -> name)) {
                                 return tmp;
                         }
                 }
         }
+        return NULL;
 }
 
 node * append(node *list, char a[], int t) {
@@ -139,7 +138,7 @@ void update_database(node *list) {
         }
 }
 
-void selling(node *list, char s[20], int k) {
+void selling(node *list, char s[], int k) {
         if (list == NULL) {
                 printf("no icecreams to sell\n");
         } else {
